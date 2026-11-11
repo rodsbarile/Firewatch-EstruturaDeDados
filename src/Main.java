@@ -1,5 +1,10 @@
 import estrutura.ListaEncadeada;
 import model.OcorrenciaIncendio;
+import ordenacao.Bubble;
+import ordenacao.Insertion;
+import ordenacao.Merge;
+import ordenacao.Quick;
+import ordenacao.Selection;
 
 private static final Scanner entrada = new Scanner(System.in);
 
@@ -54,6 +59,10 @@ void main() {
                         listarCidades(gerenciador);
                         break;
 
+                    case 9:
+                        ordenar(gerenciador);
+                        break;
+
                     case 0:
                         IO.println(
                                 "Encerrando FireWatch..."
@@ -95,6 +104,7 @@ private static void exibirMenu() {
     IO.println("6 - Demonstrar FIFO");
     IO.println("7 - Demonstrar LIFO");
     IO.println("8 - Listar Hash de cidades");
+    IO.println("9 - Ordenar ocorrências");
     IO.println("0 - Sair");
     IO.print("\nEscolha: ");
 }
@@ -327,6 +337,108 @@ private static void listarCidades(
     IO.println(
             "Total de localidades: "
                     + gerenciador.getTotalCidades()
+    );
+}
+
+// ORDENAÇÃO POR ID
+
+private static void ordenar(
+        GerenciarOcorrencias gerenciador
+) throws IOException {
+
+    IO.println("\n=== ORDENAÇÃO DE OCORRÊNCIAS ===");
+    IO.println("1 - Bubble Sort");
+    IO.println("2 - Selection Sort");
+    IO.println("3 - Quick Sort");
+    IO.println("4 - Merge Sort");
+    IO.println("5 - Insertion Sort");
+    IO.println("6 - Testar todos os métodos");
+    IO.print("Escolha o método: ");
+
+    int metodo = lerInteiro();
+    List<OcorrenciaIncendio> ocorrencias =
+            gerenciador.listarTodas();
+
+    if (metodo == 6) {
+        IO.println("\n=== TESTE DE TODOS OS MÉTODOS ===");
+
+        for (int metodoAtual = 1; metodoAtual <= 5; metodoAtual++) {
+            executarOrdenacao(ocorrencias, metodoAtual);
+        }
+
+        IO.println("Todos os métodos foram executados com sucesso.");
+        return;
+    }
+
+    executarOrdenacao(ocorrencias, metodo);
+}
+
+private static void executarOrdenacao(
+        List<OcorrenciaIncendio> ocorrencias,
+        int metodo
+) throws IOException {
+
+    long inicio = System.nanoTime();
+    List<OcorrenciaIncendio> ordenadas;
+    String nomeArquivo;
+    String nomeMetodo;
+
+    switch (metodo) {
+        case 1:
+            ordenadas = Bubble.ordenar(ocorrencias);
+            nomeArquivo = "bubble_sort.txt";
+            nomeMetodo = "Bubble Sort";
+            break;
+
+        case 2:
+            ordenadas = Selection.ordenar(ocorrencias);
+            nomeArquivo = "selection_sort.txt";
+            nomeMetodo = "Selection Sort";
+            break;
+
+        case 3:
+            ordenadas = Quick.ordenar(ocorrencias);
+            nomeArquivo = "quick_sort.txt";
+            nomeMetodo = "Quick Sort";
+            break;
+
+        case 4:
+            ordenadas = Merge.ordenar(ocorrencias);
+            nomeArquivo = "merge_sort.txt";
+            nomeMetodo = "Merge Sort";
+            break;
+
+        case 5:
+            ordenadas = Insertion.ordenar(ocorrencias);
+            nomeArquivo = "insertion_sort.txt";
+            nomeMetodo = "Insertion Sort";
+            break;
+
+        default:
+            IO.println("Método de ordenação inválido.");
+            return;
+    }
+
+    long tempoTotalNanos = System.nanoTime() - inicio;
+    GerenciarArquivo arquivo = new GerenciarArquivo();
+    arquivo.escreverSaida(nomeArquivo, ordenadas);
+    arquivo.escreverRelatorio(
+            nomeArquivo.replace(".txt", "_relatorio.txt"),
+            "Método: " + nomeMetodo + System.lineSeparator()
+                    + "Quantidade de registros: " + ocorrencias.size()
+                    + System.lineSeparator()
+                    + "Tempo total de execução: "
+                    + tempoTotalNanos + " ns"
+                    + System.lineSeparator()
+                    + "Tempo total de execução: "
+                    + (tempoTotalNanos / 1_000_000.0) + " ms"
+    );
+
+    IO.println(
+            "Ocorrências ordenadas com sucesso em dados\\"
+                    + nomeArquivo
+                    + " e relatório de desempenho em dados\\"
+                    + nomeArquivo.replace(".txt", "_relatorio.txt")
     );
 }
 

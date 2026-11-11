@@ -173,6 +173,55 @@ public class GerenciarArquivo {
         gravarAtomico(destino, linhas);
     }
 
+    // ESCREVE O RELATÓRIO DE DESEMPENHO NA PASTA DADOS.
+    public void escreverRelatorio(
+            String nomeArquivo,
+            String conteudo
+    ) throws IOException {
+
+        if (conteudo == null) {
+            throw new IllegalArgumentException("Conteúdo inválido.");
+        }
+
+        String nome = validarNomeArquivo(nomeArquivo);
+        Path pastaSaida = caminhoArquivo
+                .getParent()
+                .resolve("relatorio")
+                .normalize();
+        Path destino = pastaSaida.resolve(nome).normalize();
+
+        Files.createDirectories(pastaSaida);
+        gravarAtomico(destino, conteudo.lines().toList());
+    }
+
+    private String validarNomeArquivo(String nomeArquivo) {
+
+        if (nomeArquivo == null || nomeArquivo.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Nome do arquivo inválido."
+            );
+        }
+
+        String nome = nomeArquivo.trim();
+        Path componente = Path.of(nome);
+
+        if (componente.isAbsolute()
+                || componente.getNameCount() != 1
+                || nome.equals(".")
+                || nome.equals("..")) {
+
+            throw new IllegalArgumentException(
+                    "Informe apenas o nome do arquivo."
+            );
+        }
+
+        if (!nome.toLowerCase(Locale.ROOT).endsWith(".txt")) {
+            nome += ".txt";
+        }
+
+        return nome;
+    }
+
     // CONVERTE AS OCORRÊNCIAS PARA O FORMATO DO TXT.
     private List<String> converterParaLinhas(
             Iterable<OcorrenciaIncendio> ocorrencias

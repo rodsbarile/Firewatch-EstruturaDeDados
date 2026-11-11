@@ -28,3 +28,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+municipios_ibge.json
+/dados/relatorio/
+/dados/saida/
